@@ -1,2 +1,2 @@
 # ClearPath
-Senior
+Senior Design
