@@ -9,8 +9,6 @@ class SideBar {
         this.intersections = [];
         this.vehicles = [];
 
-        console.log(this.width);
-
         this.domElement = document.createElement('div');
         Object.assign(this.domElement.style, {
             position: 'fixed',

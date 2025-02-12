@@ -1,5 +1,5 @@
 {
-  "name": "xuper",
+  "name": "ClearPath",
   "version": "1.0.0",
   "description": "Create interactive diagrams in-browser or locally. Implement functionality manually or with integrated extensions.",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nikhilfriedman/xuper.git"
+    "url": "git+https://github.com/nikhilfriedman/ClearPath.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nikhilfriedman/xuper/issues"
+    "url": "https://github.com/nikhilfriedman/ClearPath/issues"
   },
-  "homepage": "https://github.com/nikhilfriedman/xuper#readme",
+  "homepage": "https://github.com/nikhilfriedman/ClearPath#readme",
   "dependencies": {
     "express": "^4.21.2",
     "monaco-editor": "^0.52.2"

@@ -9,8 +9,16 @@
 
   <link rel="icon" href="resources/favicon.svg" type="image/svg+xml">
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
 </head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
+<body class="bg-gray-100 h-screen flex flex-col">
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- We need this lol -->
+  <div id="map"></div>
+
   <script src="src/TopBar.js"></script>
   <script src="src/SideBar.js"></script>
   <script src="src/Main.js"></script>
