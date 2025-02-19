@@ -90,25 +90,40 @@ class MapContainer {
 
     updateElements() {
         const mapBounds = this.map.getContainer().getBoundingClientRect(); // Get map position on the page
+        const latLngBounds = this.map.getBounds(); // Get lat/lng boundaries of the visible area
 
         this.intersections.forEach(point => {
             const screenPos = this.map.latLngToContainerPoint([point.lat, point.lng]);
             const element = document.getElementById(point.id);
+            
             if (element) {
-                element.style.left = `${screenPos.x + mapBounds.left}px`; // Adjust based on map's left position
-                element.style.top = `${screenPos.y + mapBounds.top}px`;  // Adjust based on map's top position
+                if (latLngBounds.contains([point.lat, point.lng])) {
+                    element.style.left = `${screenPos.x + mapBounds.left}px`;
+                    element.style.top = `${screenPos.y + mapBounds.top}px`;
+                    element.style.display = "block"; // Ensure it's visible
+                } else {
+                    element.style.display = "none"; // Hide if out of bounds
+                }
             }
         });
 
         this.vehicles.forEach(point => {
             const screenPos = this.map.latLngToContainerPoint([point.lat, point.lng]);
             const element = document.getElementById(point.id);
+            
             if (element) {
-                element.style.left = `${screenPos.x + mapBounds.left}px`; // Adjust based on map's left position
-                element.style.top = `${screenPos.y + mapBounds.top}px`;  // Adjust based on map's top position
+                if (latLngBounds.contains([point.lat, point.lng])) {
+                    element.style.left = `${screenPos.x + mapBounds.left}px`;
+                    element.style.top = `${screenPos.y + mapBounds.top}px`;
+                    element.style.display = "block"; // Ensure it's visible
+                } else {
+                    element.style.display = "none"; // Hide if out of bounds
+                }
             }
         });
     }
+
+
 }
 
 // // Example usage
