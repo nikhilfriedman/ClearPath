@@ -1,5 +1,4 @@
-let nextIntersectionId = 0;
-let nextVehicleId = 0;
+let nextId = 0;
 
 class MapContainer {
     constructor(x, y, width) {
@@ -33,35 +32,15 @@ class MapContainer {
     }
 
     addIntersection(lat, lng) {
-        const id = `intersection-${nextIntersectionId++}`;
-        this.intersections.push({lat: lat, lng: lng, id: id});
-
-        const element = document.createElement("div");
-        element.className = "map-intersection";
-        element.id = id;
-        element.innerText = "I";
-        document.body.appendChild(element);
-
-        Object.assign(element.style, {
-            zIndex: '9999',
-            position: "absolute",
-            width: "20px",
-            height: "20px",
-            backgroundColor: "red",
-            borderRadius: "50%",
-            color: "white",
-            textAlign: "center",
-            lineHeight: "20px",
-            fontSize: "14px",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none",
-        });
-
-        this.updateElements(); // Ensure it's positioned immediately
+        const id = `intersection-${nextId++}`;
+        this.intersections.push(new TrafficLight(lat, lng, id));
+    
+        this.updateElements(); // Update positions
     }
+    
 
     addVehicle(lat, lng) {
-        const id = `vehicle-${nextVehicleId++}`;
+        const id = `vehicle-${nextId++}`;
         this.vehicles.push({lat: lat, lng: lng, id: id});
 
         const element = document.createElement("div");
@@ -91,22 +70,20 @@ class MapContainer {
     updateElements() {
         const mapBounds = this.map.getContainer().getBoundingClientRect(); // Get map position on the page
         const latLngBounds = this.map.getBounds(); // Get lat/lng boundaries of the visible area
+    
+        const zoom = this.map.getZoom();
 
-        this.intersections.forEach(point => {
-            const screenPos = this.map.latLngToContainerPoint([point.lat, point.lng]);
-            const element = document.getElementById(point.id);
-            
-            if (element) {
-                if (latLngBounds.contains([point.lat, point.lng])) {
-                    element.style.left = `${screenPos.x + mapBounds.left}px`;
-                    element.style.top = `${screenPos.y + mapBounds.top}px`;
-                    element.style.display = "block"; // Ensure it's visible
-                } else {
-                    element.style.display = "none"; // Hide if out of bounds
-                }
+        this.intersections.forEach(trafficLight => {
+            const screenPos = this.map.latLngToContainerPoint([trafficLight.lat, trafficLight.lng]);
+    
+            if (latLngBounds.contains([trafficLight.lat, trafficLight.lng])) {
+                trafficLight.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
+                trafficLight.elements.forEach(el => el.style.display = "block");
+            } else {
+                trafficLight.elements.forEach(el => el.style.display = "none");
             }
         });
-
+    
         this.vehicles.forEach(point => {
             const screenPos = this.map.latLngToContainerPoint([point.lat, point.lng]);
             const element = document.getElementById(point.id);
@@ -122,6 +99,7 @@ class MapContainer {
             }
         });
     }
+    
 
 
 }
