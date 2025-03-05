@@ -77,6 +77,8 @@ class TrafficLight {
         this.lng = lng;
         this.state = [traffic_green, traffic_green, traffic_green, traffic_green]; // One light per direction (N, E, S, W)
 
+        console.log(this.id);
+
         this.elements = [];
         for (let i = 0; i < 4; i++) {
             const element = document.createElement("div");
@@ -86,8 +88,8 @@ class TrafficLight {
             Object.assign(element.style, {
                 zIndex: "9999",
                 position: "absolute",
-                width: "50px",
-                height: "50px",
+                width: "20px",
+                height: "20px",
                 backgroundColor: this.state[i],
                 borderRadius: "50%",
                 pointerEvents: "none",
@@ -97,21 +99,28 @@ class TrafficLight {
 
         this.triangles = [];
         
-        this.triangles.push(createTriangle(100, 100, 50, 25, "black", "down"));
-        this.triangles.push(createTriangle(100, 200, 25, 50, "black", "left"));
-        this.triangles.push(createTriangle(100, 300, 50, 25, "black", "up"));
-        this.triangles.push(createTriangle(100, 400, 25, 50, "black", "right"));
+        this.triangles.push(createTriangle(100, 100, 20, 10, "black", "down"));
+        this.triangles.push(createTriangle(100, 200, 10, 20, "black", "left"));
+        this.triangles.push(createTriangle(100, 300, 20, 10, "black", "up"));
+        this.triangles.push(createTriangle(100, 400, 10, 20, "black", "right"));
 
         this.background = document.createElement("div");
+        this.background.innerText = this.id; // Display the ID
         document.body.appendChild(this.background);
         Object.assign(this.background.style, {
-            zIndex: "9998",
+            zIndex: "99999",
             position: "absolute",
-            width: "100px",
-            height: "100px",
+            width: "40px",
+            height: "40px",
             backgroundColor: "black",
             borderRadius: "50%",
             pointerEvents: "none",
+            color: "white", // Ensure text is visible
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "14px",
+            fontWeight: "bold",        
         });
 
         this.setLight(0, traffic_green);
@@ -121,33 +130,31 @@ class TrafficLight {
     }
 
     updatePosition(x, y, zoom) {
-        const zoom_coef = 1.5;
-
         // Position lights in a square around the intersection
         const offsets = [
-            { dx: 0, dy: 25 / zoom_coef }, // North
-            { dx: 25 / zoom_coef, dy: 0 },  // East
-            { dx: 0, dy: -25 / zoom_coef },   // South
-            { dx: -25 / zoom_coef, dy: 0 },  // West
+            { dx: 0, dy: 10 }, // North
+            { dx: 10, dy: 0 },  // East
+            { dx: 0, dy: -10 },   // South
+            { dx: -10, dy: 0 },  // West
         ];
         this.elements.forEach((el, i) => {
-            el.style.left = `${x /zoom_coef + offsets[i].dx}px`;
-            el.style.top = `${y /zoom_coef + offsets[i].dy}px`;
+            el.style.left = `${x + offsets[i].dx}px`;
+            el.style.top = `${y + offsets[i].dy}px`;
         });
 
         const tri_offsets = [
             { dx: 0, dy: 0 }, // North
-            { dx: 25 / zoom_coef, dy: 0 },  // East
-            { dx: 0, dy: 25 / zoom_coef },   // South
+            { dx: 10 , dy: 0 },  // East
+            { dx: 0, dy: 10  },   // South
             { dx: 0, dy: 0 },  // West
         ];
         this.triangles.forEach((tri, i) => {
-            tri.style.left = `${x / zoom_coef + tri_offsets[i].dx}px`;
-            tri.style.top = `${y / zoom_coef + tri_offsets[i].dy}px`;
+            tri.style.left = `${x + tri_offsets[i].dx}px`;
+            tri.style.top = `${y + tri_offsets[i].dy}px`;
         });
 
-        this.background.style.left = `${x - 25}px`;
-        this.background.style.top = `${y - 25}px`;
+        this.background.style.left = `${x - 10}px`;
+        this.background.style.top = `${y - 10}px`;
 
     }
 
@@ -171,6 +178,6 @@ class TrafficLight {
                 tri_direction = "right";
                 break;
         }
-        setTriangleColor(this.triangles[direction], 25, color, tri_direction);
+        setTriangleColor(this.triangles[direction], 10, color, tri_direction);
     }
 }

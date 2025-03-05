@@ -31,8 +31,7 @@ class MapContainer {
         this.updateElements(); 
     }
 
-    addIntersection(lat, lng) {
-        const id = `intersection-${nextId++}`;
+    addIntersection(lat, lng, id) {
         this.intersections.push(new TrafficLight(lat, lng, id));
     
         this.updateElements(); // Update positions
@@ -79,8 +78,12 @@ class MapContainer {
             if (latLngBounds.contains([trafficLight.lat, trafficLight.lng])) {
                 trafficLight.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
                 trafficLight.elements.forEach(el => el.style.display = "block");
+                trafficLight.triangles.forEach(el => el.style.display = "block");
+                trafficLight.background.style.display = "block";
             } else {
                 trafficLight.elements.forEach(el => el.style.display = "none");
+                trafficLight.triangles.forEach(el => el.style.display = "none");
+                trafficLight.background.style.display = "none";
             }
         });
     
