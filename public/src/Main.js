@@ -154,25 +154,24 @@ function reconstructPath(previous, startNode, endNode) {
     return path;
 }
 
+// mapContainer.container.addEventListener("mousedown", function () {
+//     if (!wasmReady) {
+//         console.warn("WASM is not ready yet!");
+//         return;
+//     }
 
-document.addEventListener("mousedown", function () {
-    if (!wasmReady) {
-        console.warn("WASM is not ready yet!");
-        return;
-    }
+//     console.log("Mouse down detected. Running Dijkstra...");
 
-    console.log("Mouse down detected. Running Dijkstra...");
+//     let adjacencyMatrix = createAdjacencyMatrix(traffic_lights, 120);
+//     let flattenedGraph = flattenMatrix(adjacencyMatrix);
+//     let numNodes = adjacencyMatrix.length;
 
-    let adjacencyMatrix = createAdjacencyMatrix(traffic_lights, 120);
-    let flattenedGraph = flattenMatrix(adjacencyMatrix);
-    let numNodes = adjacencyMatrix.length;
+//     // Example: Find the shortest path from node 0 to node 6
+//     let path = runDijkstra(flattenedGraph, numNodes, 4, 7);
+//     mapContainer.drawPath(path);
 
-    // Example: Find the shortest path from node 0 to node 6
-    let path = runDijkstra(flattenedGraph, numNodes, 4, 7);
-    mapContainer.drawPath(path);
-
-    console.log("Shortest path from 0 to 6:", path);
-});
+//     console.log("Shortest path from 0 to 6:", path);
+// });
 
 
 /*

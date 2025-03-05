@@ -7,6 +7,7 @@ function createTriangle(x, y, w, h, color, direction = "up") {
         height: "0",
         left: `${x}px`,
         top: `${y}px`,
+        pointerEvents: "none",
     });
 
     switch (direction) {

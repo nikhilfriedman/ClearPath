@@ -9,6 +9,10 @@ class MapContainer {
         this.intersections = [];
         this.vehicles = [];
 
+        this.startNode = null;
+        this.endNode = null;
+        this.currentPath = null;
+
         this.container = document.getElementById("map");
         Object.assign(this.container.style, {
             height: `calc(100vh - 40px)`, // Full height minus the top bar
@@ -29,11 +33,57 @@ class MapContainer {
         this.map.on("move", this.updateElements);
         this.map.on("zoom", this.updateElements);
         this.updateElements(); 
+
+        this.map.on("click", this.handleMapClick.bind(this));
+    }
+
+    handleMapClick(event) {
+        let latlng = event.latlng; // Get lat/lon from click event
+        console.log("Clicked at:", latlng);
+
+        if (this.currentPath != null) {
+            this.map.removeLayer(this.currentPath);
+            this.currentPath = null;
+        }
+
+        // Find the closest node
+        let clickedNode = this.findClosestNode(latlng.lat, latlng.lng);
+
+        if (clickedNode !== null) {
+            if (this.startNode === null) {
+                this.startNode = clickedNode;
+                console.log(`Start node selected: ${clickedNode}`);
+            } else if (this.endNode === null) {
+                this.endNode = clickedNode;
+                console.log(`End node selected: ${clickedNode}`);
+
+                // Run Dijkstra and draw the path
+                this.calculateAndDrawPath();
+                
+                // Reset for the next selection
+                this.startNode = null;
+                this.endNode = null;
+            }
+        }
+    }
+
+    findClosestNode(lat, lon) {
+        let minDistance = Infinity;
+        let closestNode = null;
+
+        traffic_lights.forEach(([nodeLat, nodeLon], index) => {
+            let distance = haversine(lat, lon, nodeLat, nodeLon);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestNode = index;
+            }
+        });
+
+        return closestNode;
     }
 
     addIntersection(lat, lng, id) {
         this.intersections.push(new TrafficLight(lat, lng, id));
-    
         this.updateElements(); // Update positions
     }
     
@@ -131,12 +181,34 @@ class MapContainer {
         console.log("Drawing path with coordinates:", coordinates);
 
         // Draw the polyline
-        let polyline = L.polyline(coordinates, { color: 'red', weight: 5 });
+        this.currentPath = L.polyline(coordinates, { color: 'red', weight: 5 });
 
         // Add polyline to the correct map instance
-        polyline.addTo(this.map);
+        this.currentPath.addTo(this.map);
     }
     
+    calculateAndDrawPath() {
+        if (this.startNode === null || this.endNode === null) {
+            console.error("Start or end node is not set.");
+            return;
+        }
+
+        console.log(`Calculating path from ${this.startNode} to ${this.endNode}...`);
+
+        let adjacencyMatrix = createAdjacencyMatrix(traffic_lights, 120);
+        let flattenedGraph = flattenMatrix(adjacencyMatrix);
+        let numNodes = adjacencyMatrix.length;
+
+        let path = runDijkstra(flattenedGraph, numNodes, this.startNode, this.endNode);
+
+        console.log("Computed path:", path);
+
+        if (Array.isArray(path) && path.length > 1) {
+            this.drawPath(path);
+        } else {
+            console.error("Invalid path returned from Dijkstra:", path);
+        }
+    }
 
 
 }
