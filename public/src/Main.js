@@ -15,6 +15,8 @@ sideBar.addVehicle("Ambulance");
 sideBar.addVehicle("Firetruck");
 
 const mapContainer = new MapContainer(200, 40, 300);
+console.log("Map container instance:", mapContainer);
+console.log("Map instance inside MapContainer:", mapContainer.map);
 
 // DO NOT CHANGE
 traffic_lights = [
@@ -152,6 +154,7 @@ function reconstructPath(previous, startNode, endNode) {
     return path;
 }
 
+
 document.addEventListener("mousedown", function () {
     if (!wasmReady) {
         console.warn("WASM is not ready yet!");
@@ -165,15 +168,8 @@ document.addEventListener("mousedown", function () {
     let numNodes = adjacencyMatrix.length;
 
     // Example: Find the shortest path from node 0 to node 6
-    // let path = runDijkstra(flattenedGraph, numNodes, 0, 4);
-
-    let path;
-    for (i = 0; i <= 7; i++) {
-        for (j = 0; j <= 7; j++) {
-            path = runDijkstra(flattenedGraph, numNodes, i, j);
-            console.log(i, " -> ", j, ": ", path);
-        }
-    }
+    let path = runDijkstra(flattenedGraph, numNodes, 4, 7);
+    mapContainer.drawPath(path);
 
     console.log("Shortest path from 0 to 6:", path);
 });

@@ -102,6 +102,40 @@ class MapContainer {
             }
         });
     }
+
+    drawPath(path) {
+        if (!this.map) {
+            console.error("Map instance is not available.");
+            return;
+        }
+
+        if (!Array.isArray(path) || path.length < 2) {
+            console.error("Invalid path array:", path);
+            return;
+        }
+
+        // Convert node indices to lat/lon coordinates
+        let coordinates = path.map(index => {
+            if (index < 0 || index >= traffic_lights.length) {
+                console.error(`Invalid node index: ${index}`);
+                return null;
+            }
+            return traffic_lights[index]; // Convert index to lat/lon
+        }).filter(coord => coord !== null); // Remove invalid nodes
+
+        if (coordinates.length < 2) {
+            console.error("Not enough valid coordinates to draw a path.");
+            return;
+        }
+
+        console.log("Drawing path with coordinates:", coordinates);
+
+        // Draw the polyline
+        let polyline = L.polyline(coordinates, { color: 'red', weight: 5 });
+
+        // Add polyline to the correct map instance
+        polyline.addTo(this.map);
+    }
     
 
 
