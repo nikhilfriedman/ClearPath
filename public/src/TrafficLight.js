@@ -124,10 +124,11 @@ class TrafficLight {
             fontWeight: "bold",        
         });
 
-        this.setLight(0, traffic_green);
-        this.setLight(1, traffic_red);
-        this.setLight(2, traffic_green);
-        this.setLight(3, traffic_red);
+        // null color value to start
+        this.setLight(0, "black");
+        this.setLight(1, "black");
+        this.setLight(2, "black");
+        this.setLight(3, "black");
     }
 
     updatePosition(x, y, zoom) {

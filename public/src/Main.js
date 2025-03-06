@@ -1,9 +1,12 @@
 // Set white background for now
 document.body.style.backgroundColor = 'white';
 
+// traffic colors
 const traffic_green = '#4ff08d';
 const traffic_yellow = '#f0db5b';
 const traffic_red = '#ed665c';
+
+let current_path = [];
 
 // Initialize UI components
 const topBar = new TopBar(0, 0);
@@ -37,203 +40,109 @@ traffic_lights.forEach((element, index) => {
 
 mapContainer.addVehicle(40.41732303838001, -86.89548276315818, "car");
 
-function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // Earth's radius in meters
-    const toRad = x => x * Math.PI / 180;
+// default traffic behavior
+let time_int = 0;
+let time_state = 0;
 
-    let dLat = toRad(lat2 - lat1);
-    let dLon = toRad(lon2 - lon1);
-    let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+setInterval(() => {
+    time_int++;
 
-    return R * c; // Distance in meters
-}
-
-function createAdjacencyMatrix(traffic_lights, maxDistance = 120) {
-    let n = traffic_lights.length;
-    let matrix = Array.from({ length: n }, () => Array(n).fill(Infinity));
-
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < n; j++) {
-            if (i === j) {
-                matrix[i][j] = 0; // Distance to self is 0
-            } else {
-                let [lat1, lon1] = traffic_lights[i];
-                let [lat2, lon2] = traffic_lights[j];
-                let distance = haversine(lat1, lon1, lat2, lon2);
-
-                if (distance <= maxDistance) {
-                    matrix[i][j] = distance; // Only connect nearby lights
-                }
-            }
+    if (time_int % 300 == 0) {
+        time_state++;
+        if (time_state > 3) {
+            time_state = 0;
         }
     }
-    return matrix;
-}
 
-let adjacencyMatrix = createAdjacencyMatrix(traffic_lights);
-console.log(adjacencyMatrix);
+    let lights = mapContainer.intersections;
 
-function flattenMatrix(matrix) {
-    return matrix.flat();
-}
+    lights.forEach(element => {
+        // skip lights that are being modified by algo
+        if (current_path.includes(element.id)) {
+            // TODO : set to value based on traffic light
+            let d_lat = mapContainer.vehicles[0].lat - element.lat;
+            let d_lng = mapContainer.vehicles[0].lng - element.lng;
 
-let flattenedGraph = flattenMatrix(adjacencyMatrix);
-let numNodes = adjacencyMatrix.length;
+            let distance = Math.sqrt(d_lat ** 2 + d_lng ** 2);
 
-console.log(flattenedGraph);
+            // NEAR ! change light
+            if (distance < 0.00045) {
+                
+                if (d_lat < d_lng) {
+                    // N S
 
-let wasmReady = false;
+                    element.setLight(0, "white");
+                    element.setLight(1, "white");
+                    element.setLight(2, "white");
+                    element.setLight(3, "white");
+    
+                } else {
+                    // E W
 
-document.addEventListener("DOMContentLoaded", function () {
-    Module.onRuntimeInitialized = function () {
-        console.log("WASM Module Loaded");
-        wasmReady = true;
-    };
-});
+                    element.setLight(0, "black");
+                    element.setLight(1, "black");
+                    element.setLight(2, "black");
+                    element.setLight(3, "black");
+    
+                }
 
-function runDijkstra(graph, numNodes, startNode, endNode) {
-    if (!wasmReady) {
-        console.warn("WASM is not ready yet!");
-        return;
-    }
+                if (distance < 0.00005) {
+                    current_path = current_path.filter(item => item !== element.id);
+                    console.log("removed: ", element.id);
+                    console.log("current path: ", current_path);
 
-    let graphSize = graph.length * 4;
-    let outputSize = numNodes * 4;
+                    // TODO : MAKE THIS A QUEUE !!!!
 
-    let graphPtr = Module._malloc(graphSize);
-    let distPtr = Module._malloc(outputSize);
-    let prevPtr = Module._malloc(outputSize); // New array to store previous nodes
+                    mapContainer.map.removeLayer(mapContainer.currentPath);
+                    mapContainer.drawPath(current_path);
+                }
 
-    if (!graphPtr || !distPtr || !prevPtr) {
-        console.error("Failed to allocate memory in WASM.");
-        return;
-    }
+                return;
 
-    // Copy adjacency matrix to WASM heap
-    Module.HEAP32.set(graph, graphPtr / 4);
+            } 
 
-    // Get function reference from WASM
-    let dijkstraFunction = Module.cwrap('dijkstra', null, ['number', 'number', 'number', 'number', 'number']);
+            // console.log(distance);
 
-    // Call the WASM function
-    dijkstraFunction(graphPtr, numNodes, startNode, distPtr, prevPtr);
+            // element.setLight(0, "black");
+            // element.setLight(1, "black");
+            // element.setLight(2, "black");
+            // element.setLight(3, "black");
+        }
 
-    // Read results from WASM memory
-    let distances = new Int32Array(Module.HEAP32.buffer, distPtr, numNodes);
-    let previous = new Int32Array(Module.HEAP32.buffer, prevPtr, numNodes);
+        switch (time_state) {
+            case 0:
+                element.setLight(0, traffic_red);
+                element.setLight(1, traffic_green);
+                element.setLight(2, traffic_red);
+                element.setLight(3, traffic_green);
+                break;
+            case 1:
+                element.setLight(0, traffic_red);
+                element.setLight(1, traffic_yellow);
+                element.setLight(2, traffic_red);
+                element.setLight(3, traffic_yellow);
+                break;
+            case 2:
+                element.setLight(0, traffic_green);
+                element.setLight(1, traffic_red);
+                element.setLight(2, traffic_green);
+                element.setLight(3, traffic_red);
+                break;
+            case 3:
+                element.setLight(0, traffic_yellow);
+                element.setLight(1, traffic_red);
+                element.setLight(2, traffic_yellow);
+                element.setLight(3, traffic_red);
+                break;
+            default:
+                element.setLight(0, "black");
+                element.setLight(1, "black");
+                element.setLight(2, "black");
+                element.setLight(3, "black");
 
-    console.log("Shortest distances:", distances);
-    console.log("Previous nodes:", previous);
+                console.log("invalid time state: ", time_state);
+                break;    
+        }
+    });
+}, 10);
 
-    // Free allocated memory
-    Module._free(graphPtr);
-    Module._free(distPtr);
-    Module._free(prevPtr);
-
-    // Construct the shortest path from startNode to endNode
-    return reconstructPath(previous, startNode, endNode);
-}
-
-function reconstructPath(previous, startNode, endNode) {
-    let path = [];
-    let currentNode = endNode;
-
-    while (currentNode !== -1) {
-        path.push(currentNode);
-        currentNode = previous[currentNode]; // Move to the previous node
-    }
-
-    path.reverse(); // Reverse to get path from start → end
-
-    if (path[0] !== startNode) {
-        console.warn("No valid path found.");
-        return [];
-    }
-
-    return path;
-}
-
-// mapContainer.container.addEventListener("mousedown", function () {
-//     if (!wasmReady) {
-//         console.warn("WASM is not ready yet!");
-//         return;
-//     }
-
-//     console.log("Mouse down detected. Running Dijkstra...");
-
-//     let adjacencyMatrix = createAdjacencyMatrix(traffic_lights, 120);
-//     let flattenedGraph = flattenMatrix(adjacencyMatrix);
-//     let numNodes = adjacencyMatrix.length;
-
-//     // Example: Find the shortest path from node 0 to node 6
-//     let path = runDijkstra(flattenedGraph, numNodes, 4, 7);
-//     mapContainer.drawPath(path);
-
-//     console.log("Shortest path from 0 to 6:", path);
-// });
-
-
-/*
-    WEB SOCKET
-*/
-
-
-
-
-// mapContainer.intersections[0].setLight(3, traffic_green);
-
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     // Ensure Module is ready before calling test()
-//     Module.onRuntimeInitialized = function () {
-//         console.log("WASM Module Loaded");
-
-//         // Call the test function
-//         let testFunction = Module.cwrap('test', 'number', []);
-//         // let result = testFunction();
-//         // console.log("test() returned:", result);
-
-//         testFunction();
-//     };
-// });
-
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     Module.onRuntimeInitialized = function () {
-//         console.log("WASM Module Loaded");
-
-//         // Example Graph (Adjacency Matrix, Flattened)
-//         let numNodes = 5;
-//         let graph = [
-//             0, 10, 3,  0, 0,
-//             0,  0, 1,  2, 0,
-//             0,  4, 0,  8, 2,
-//             0,  0, 0,  0, 7,
-//             0,  0, 0,  9, 0
-//         ]; // 5x5 matrix (row-major)
-
-//         let startNode = 0;
-
-//         // Allocate memory in WASM heap
-//         let graphPtr = Module._malloc(graph.length * 4); // 4 bytes per int
-//         let outputPtr = Module._malloc(numNodes * 4);
-
-//         // Copy graph data to WASM heap
-//         Module.HEAP32.set(graph, graphPtr / 4);
-
-//         // Call WASM function
-//         let dijkstraFunction = Module.cwrap('dijkstra', null, ['number', 'number', 'number', 'number']);
-//         dijkstraFunction(graphPtr, numNodes, startNode, outputPtr);
-
-//         // Read output from WASM heap
-//         let result = new Int32Array(Module.HEAP32.buffer, outputPtr, numNodes);
-//         console.log("Shortest distances from node", startNode, ":", result);
-
-//         // Free allocated memory
-//         Module._free(graphPtr);
-//         Module._free(outputPtr);
-//     };
-// });

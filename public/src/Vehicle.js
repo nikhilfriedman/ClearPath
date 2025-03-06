@@ -9,7 +9,7 @@ class Vehicle {
         this.background.innerText = this.id; // Display the ID
         document.body.appendChild(this.background);
         Object.assign(this.background.style, {
-            zIndex: "9998",
+            zIndex: "9999",
             position: "absolute",
             width: "40px",
             height: "40px",

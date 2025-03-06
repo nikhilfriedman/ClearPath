@@ -39,7 +39,7 @@ class MapContainer {
     }
 
     handleKeyEvent(event) {
-        const delta = 0.0001; // Amount to modify lat/lng
+        const delta = 0.00005; // Amount to modify lat/lng
     
         console.log("Key Pressed: ", event.key);
 
@@ -50,7 +50,6 @@ class MapContainer {
                 vehicle.updateLatLng(delta, 0); // Increase latitude
                 break;
             case 's':
-                console.log("S");
                 vehicle.updateLatLng(-delta, 0); // Decrease latitude
                 break;
             case "a":
@@ -65,10 +64,17 @@ class MapContainer {
         }
     
         const mapBounds = this.map.getContainer().getBoundingClientRect(); // Get map position on the page
+        const latLngBounds = this.map.getBounds(); // Get lat/lng boundaries of the visible area
         const screenPos = this.map.latLngToContainerPoint([vehicle.lat, vehicle.lng]);
         const zoom = this.map.getZoom();
 
-        vehicle.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
+        if (latLngBounds.contains([vehicle.lat, vehicle.lng])) {
+            vehicle.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
+            vehicle.background.style.display = "block";
+        } else {
+            vehicle.background.style.display = "none";
+        }            
+
 
         this.vehicles[0].updatePosition()
 
@@ -130,32 +136,6 @@ class MapContainer {
     addVehicle(lat, lng, id) {
         this.vehicles.push(new Vehicle(lat, lng, id));
         this.updateElements();
-
-        // const id = `vehicle-${nextId++}`;
-        // this.vehicles.push({lat: lat, lng: lng, id: id});
-
-        // const element = document.createElement("div");
-        // element.className = "map-vehicle";
-        // element.id = id;
-        // element.innerText = "V";
-        // document.body.appendChild(element);
-
-        // Object.assign(element.style, {
-        //     zIndex: '9999',
-        //     position: "absolute",
-        //     width: "20px",
-        //     height: "20px",
-        //     backgroundColor: "blue",
-        //     borderRadius: "50%",
-        //     color: "white",
-        //     textAlign: "center",
-        //     lineHeight: "20px",
-        //     fontSize: "14px",
-        //     transform: "translate(-50%, -50%)",
-        //     pointerEvents: "none",
-        // });
-
-        // this.updateElements(); // Ensure it's positioned immediately
     }
 
     updateElements() {
@@ -237,14 +217,14 @@ class MapContainer {
         let flattenedGraph = flattenMatrix(adjacencyMatrix);
         let numNodes = adjacencyMatrix.length;
 
-        let path = runDijkstra(flattenedGraph, numNodes, this.startNode, this.endNode);
+        current_path = runDijkstra(flattenedGraph, numNodes, this.startNode, this.endNode);
 
-        console.log("Computed path:", path);
+        console.log("Computed path:", current_path);
 
-        if (Array.isArray(path) && path.length > 1) {
-            this.drawPath(path);
+        if (Array.isArray(current_path) && current_path.length > 1) {
+            this.drawPath(current_path);
         } else {
-            console.error("Invalid path returned from Dijkstra:", path);
+            console.error("Invalid path returned from Dijkstra:", current_path);
         }
     }
 
