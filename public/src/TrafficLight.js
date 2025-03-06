@@ -109,7 +109,7 @@ class TrafficLight {
         this.background.innerText = this.id; // Display the ID
         document.body.appendChild(this.background);
         Object.assign(this.background.style, {
-            zIndex: "99999",
+            zIndex: "9998",
             position: "absolute",
             width: "40px",
             height: "40px",

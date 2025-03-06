@@ -35,8 +35,47 @@ class MapContainer {
         this.updateElements(); 
 
         this.map.on("click", this.handleMapClick.bind(this));
+        document.body.addEventListener("keydown", this.handleKeyEvent.bind(this));
     }
 
+    handleKeyEvent(event) {
+        const delta = 0.0001; // Amount to modify lat/lng
+    
+        console.log("Key Pressed: ", event.key);
+
+        let vehicle = this.vehicles[0];
+
+        switch (event.key) {
+            case "w":
+                vehicle.updateLatLng(delta, 0); // Increase latitude
+                break;
+            case 's':
+                console.log("S");
+                vehicle.updateLatLng(-delta, 0); // Decrease latitude
+                break;
+            case "a":
+                vehicle.updateLatLng(0, -delta); // Decrease longitude
+                break;
+            case "d":
+                vehicle.updateLatLng(0, delta); // Increase longitude
+                break;
+            default:
+                console.log("def case");
+                return; // Ignore other keys
+        }
+    
+        const mapBounds = this.map.getContainer().getBoundingClientRect(); // Get map position on the page
+        const screenPos = this.map.latLngToContainerPoint([vehicle.lat, vehicle.lng]);
+        const zoom = this.map.getZoom();
+
+        vehicle.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
+
+        this.vehicles[0].updatePosition()
+
+        // Prevent default browser behavior (e.g., scrolling)
+        event.preventDefault();
+    }
+    
     handleMapClick(event) {
         let latlng = event.latlng; // Get lat/lon from click event
         console.log("Clicked at:", latlng);
@@ -88,32 +127,35 @@ class MapContainer {
     }
     
 
-    addVehicle(lat, lng) {
-        const id = `vehicle-${nextId++}`;
-        this.vehicles.push({lat: lat, lng: lng, id: id});
+    addVehicle(lat, lng, id) {
+        this.vehicles.push(new Vehicle(lat, lng, id));
+        this.updateElements();
 
-        const element = document.createElement("div");
-        element.className = "map-vehicle";
-        element.id = id;
-        element.innerText = "V";
-        document.body.appendChild(element);
+        // const id = `vehicle-${nextId++}`;
+        // this.vehicles.push({lat: lat, lng: lng, id: id});
 
-        Object.assign(element.style, {
-            zIndex: '9999',
-            position: "absolute",
-            width: "20px",
-            height: "20px",
-            backgroundColor: "blue",
-            borderRadius: "50%",
-            color: "white",
-            textAlign: "center",
-            lineHeight: "20px",
-            fontSize: "14px",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none",
-        });
+        // const element = document.createElement("div");
+        // element.className = "map-vehicle";
+        // element.id = id;
+        // element.innerText = "V";
+        // document.body.appendChild(element);
 
-        this.updateElements(); // Ensure it's positioned immediately
+        // Object.assign(element.style, {
+        //     zIndex: '9999',
+        //     position: "absolute",
+        //     width: "20px",
+        //     height: "20px",
+        //     backgroundColor: "blue",
+        //     borderRadius: "50%",
+        //     color: "white",
+        //     textAlign: "center",
+        //     lineHeight: "20px",
+        //     fontSize: "14px",
+        //     transform: "translate(-50%, -50%)",
+        //     pointerEvents: "none",
+        // });
+
+        // this.updateElements(); // Ensure it's positioned immediately
     }
 
     updateElements() {
@@ -137,19 +179,15 @@ class MapContainer {
             }
         });
     
-        this.vehicles.forEach(point => {
-            const screenPos = this.map.latLngToContainerPoint([point.lat, point.lng]);
-            const element = document.getElementById(point.id);
-            
-            if (element) {
-                if (latLngBounds.contains([point.lat, point.lng])) {
-                    element.style.left = `${screenPos.x + mapBounds.left}px`;
-                    element.style.top = `${screenPos.y + mapBounds.top}px`;
-                    element.style.display = "block"; // Ensure it's visible
-                } else {
-                    element.style.display = "none"; // Hide if out of bounds
-                }
-            }
+        this.vehicles.forEach(vehicle => {
+            const screenPos = this.map.latLngToContainerPoint([vehicle.lat, vehicle.lng]);
+    
+            if (latLngBounds.contains([vehicle.lat, vehicle.lng])) {
+                vehicle.updatePosition(screenPos.x + mapBounds.left, screenPos.y + mapBounds.top, zoom);
+                vehicle.background.style.display = "block";
+            } else {
+                vehicle.background.style.display = "none";
+            }            
         });
     }
 
@@ -181,7 +219,7 @@ class MapContainer {
         console.log("Drawing path with coordinates:", coordinates);
 
         // Draw the polyline
-        this.currentPath = L.polyline(coordinates, { color: 'red', weight: 5 });
+        this.currentPath = L.polyline(coordinates, { color: 'blue', weight: 10 });
 
         // Add polyline to the correct map instance
         this.currentPath.addTo(this.map);

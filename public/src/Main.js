@@ -35,6 +35,8 @@ traffic_lights.forEach((element, index) => {
     mapContainer.addIntersection(element[0], element[1], index);
 });
 
+mapContainer.addVehicle(40.41732303838001, -86.89548276315818, "car");
+
 function haversine(lat1, lon1, lat2, lon2) {
     const R = 6371e3; // Earth's radius in meters
     const toRad = x => x * Math.PI / 180;
