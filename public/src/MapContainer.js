@@ -224,6 +224,8 @@ class MapContainer {
             return;
         }
 
+        sideBar.setCurrentPath([this.startNode, this.endNode]);
+
         console.log(`Calculating path from ${this.startNode} to ${this.endNode}...`);
 
         let adjacencyMatrix = createAdjacencyMatrix(traffic_lights, 120);

@@ -5,8 +5,8 @@ class SideBar {
         this.y = y;
         this.width = width;
 
-        this.intersections = [];
-        this.paths = [];
+        this.current_path = [];
+        this.scheduled_paths = [];
 
         // Create sidebar container
         this.domElement = document.createElement('div');
@@ -39,57 +39,63 @@ class SideBar {
         this.domElement.appendChild(this.resizer);
         this.makeResizable();
 
-        // Create intersections container
-        this.intersectionsContainer = document.createElement('div');
-        this.intersectionsContainer.style.flex = "1";
-        this.intersectionsContainer.style.overflowY = "auto";
-        this.intersectionsContainer.style.padding = "10px";
-        this.intersectionsContainer.innerHTML = "<h3>Intersections</h3>";
-        this.domElement.appendChild(this.intersectionsContainer);
+        // Create current_path container
+        this.currentPathContainer = document.createElement('div');
+        this.currentPathContainer.style.flex = "1";
+        this.currentPathContainer.style.overflowY = "auto";
+        this.currentPathContainer.style.padding = "10px";
+        this.currentPathContainer.innerHTML = "<h3>Current Path</h3>";
+        this.domElement.appendChild(this.currentPathContainer);
 
         // Create vehicles container
-        this.vehiclesContainer = document.createElement('div');
-        this.vehiclesContainer.style.flex = "1";
-        this.vehiclesContainer.style.overflowY = "auto";
-        this.vehiclesContainer.style.padding = "10px";
-        this.vehiclesContainer.innerHTML = "<h3>Scheduled Paths</h3>";
-        this.domElement.appendChild(this.vehiclesContainer);
+        this.scheduledPathsContainer = document.createElement('div');
+        this.scheduledPathsContainer.style.flex = "1";
+        this.scheduledPathsContainer.style.overflowY = "auto";
+        this.scheduledPathsContainer.style.padding = "10px";
+        this.scheduledPathsContainer.innerHTML = "<h3>Scheduled Paths</h3>";
+        this.domElement.appendChild(this.scheduledPathsContainer);
     }
 
-    // Method to update the displayed intersections and vehicles
+    // Method to update the displayed current_path and vehicles
     update() {
         // Clear existing lists
-        this.intersectionsContainer.innerHTML = "<h3>Intersections</h3>";
-        this.vehiclesContainer.innerHTML = "<h3>Scheduled Paths</h3>";
+        this.currentPathContainer.innerHTML = "<h3>Current Path</h3>";
+        this.scheduledPathsContainer.innerHTML = "<h3>Scheduled Paths</h3>";
 
-        // Render intersections
-        this.intersections.forEach((intersection, index) => {
-            const item = document.createElement("div");
-            item.textContent = `Intersection ${index + 1}: ${intersection}`;
-            item.style.borderBottom = "1px solid gray";
-            item.style.padding = "5px";
-            this.intersectionsContainer.appendChild(item);
-        });
+        // Render current_path
+        // this.current_path.forEach((intersection, index) => {
+        //     const item = document.createElement("div");
+        //     item.textContent = `Intersection ${index + 1}: ${intersection}`;
+        //     item.style.borderBottom = "1px solid gray";
+        //     item.style.padding = "5px";
+        //     this.currentPathContainer.appendChild(item);
+        // });
+
+        const path_item = document.createElement("div");
+        path_item.textContent = `${this.current_path[0]} -> ${this.current_path[1]}`;
+        path_item.style.borderBottom = "1px solid gray";
+        path_item.style.padding = "5px";
+        this.currentPathContainer.appendChild(path_item);
 
         // Render vehicles
-        this.paths.forEach(path => {
+        this.scheduled_paths.forEach(path => {
             const item = document.createElement("div");
             item.textContent = `${path[0]} -> ${path[1]}`;
             item.style.borderBottom = "1px solid gray";
             item.style.padding = "5px";
-            this.vehiclesContainer.appendChild(item);
+            this.scheduledPathsContainer.appendChild(item);
         });
     }
 
     // Method to add an intersection
-    addIntersection(intersection) {
-        this.intersections.push(intersection);
+    setCurrentPath(path) {
+        this.current_path = path;
         this.update();
     }
 
     // Method to add a vehicle
     addPath(path) {
-        this.paths.push(path);
+        this.scheduled_paths.push(path);
         this.update();
     }
 

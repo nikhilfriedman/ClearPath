@@ -12,8 +12,6 @@ let current_path = [];
 const topBar = new TopBar(0, 0);
 
 const sideBar = new SideBar(0, 40, 300);
-sideBar.addIntersection("Main St & 1st Ave");
-sideBar.addIntersection("Broadway & 5th Ave");
 
 const mapContainer = new MapContainer(200, 40, 300);
 console.log("Map container instance:", mapContainer);

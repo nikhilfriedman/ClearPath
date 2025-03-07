@@ -61,7 +61,6 @@ setInterval(() => {
                         element.setLight(1, traffic_green);
                         element.setLight(2, traffic_red);
                         element.setLight(3, traffic_green);
-            
                     }
     
                 }
@@ -82,11 +81,12 @@ setInterval(() => {
                         console.log("current path: ", current_path);
                     }
 
-
+                    // if we finished the path...
                     if (current_path.length == 0) {
                         if (mapContainer.transactions.length != 0) {
                             let next_path = mapContainer.transactions.pop();
-                            sideBar.paths.pop();
+                            sideBar.scheduled_paths.pop();
+                            sideBar.setCurrentPath(next_path);
                             sideBar.update();
 
                             mapContainer.startNode = next_path[0];
@@ -96,6 +96,9 @@ setInterval(() => {
                             mapContainer.startNode = null;
                             mapContainer.endNode = null;
                             mapContainer.calculateAndDrawPath();
+
+                            sideBar.setCurrentPath(["none", "none"]);
+                            sideBar.update();
                         }
                     }
 
