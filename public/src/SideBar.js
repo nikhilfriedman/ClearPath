@@ -71,11 +71,13 @@ class SideBar {
         //     this.currentPathContainer.appendChild(item);
         // });
 
-        const path_item = document.createElement("div");
-        path_item.textContent = `${this.current_path[0]} -> ${this.current_path[1]}`;
-        path_item.style.borderBottom = "1px solid gray";
-        path_item.style.padding = "5px";
-        this.currentPathContainer.appendChild(path_item);
+        if (this.current_path.length != 0) {
+            const path_item = document.createElement("div");
+            path_item.textContent = `${this.current_path[0]} -> ${this.current_path[1]}`;
+            path_item.style.borderBottom = "1px solid gray";
+            path_item.style.padding = "5px";
+            this.currentPathContainer.appendChild(path_item);    
+        }
 
         // Render vehicles
         this.scheduled_paths.forEach(path => {

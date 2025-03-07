@@ -97,7 +97,7 @@ setInterval(() => {
                             mapContainer.endNode = null;
                             mapContainer.calculateAndDrawPath();
 
-                            sideBar.setCurrentPath(["none", "none"]);
+                            sideBar.setCurrentPath([]);
                             sideBar.update();
                         }
                     }
