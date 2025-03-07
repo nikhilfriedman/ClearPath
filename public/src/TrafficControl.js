@@ -21,14 +21,14 @@ setInterval(() => {
         // skip lights that are being modified by algo
         if (current_path.includes(element.id)) {
             // TODO : set to value based on traffic light
-            let d_lat = mapContainer.vehicles[0].lat - element.lat;
-            let d_lng = mapContainer.vehicles[0].lng - element.lng;
+            let d_lat = Math.abs(mapContainer.vehicles[0].lat - element.lat);
+            let d_lng = Math.abs(mapContainer.vehicles[0].lng - element.lng);
 
             let distance = Math.sqrt(d_lat ** 2 + d_lng ** 2);
 
             // NEAR ! change light
             if (distance < 0.00065) {
-                if (d_lat < d_lng) {
+                if (d_lat > d_lng) {
                     if (element.state[0] == traffic_green || element.state[0] == traffic_yellow) {
                         // do nothing. we are already in desired state
                     } else {
@@ -48,8 +48,9 @@ setInterval(() => {
 
                 // finally turn green when close enough
                 if (distance < 0.00045) {
-                    if (d_lat < d_lng) {
+                    if (d_lat > d_lng) {
                         // N S
+                        console.log("N S");
                         element.setLight(0, traffic_green);
                         element.setLight(1, traffic_red);
                         element.setLight(2, traffic_green);
@@ -57,6 +58,7 @@ setInterval(() => {
             
                     } else {
                         // E W
+                        console.log("E W");
                         element.setLight(0, traffic_red);
                         element.setLight(1, traffic_green);
                         element.setLight(2, traffic_red);
