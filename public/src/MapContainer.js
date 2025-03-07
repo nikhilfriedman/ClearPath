@@ -234,6 +234,7 @@ class MapContainer {
 
         console.log("Computed path:", current_path);
 
+        // proof of < 100ms response time for subsystem demo
         console.log("Took ", performance.now() - this.start_perf, "ms");
 
         if (Array.isArray(current_path) && current_path.length > 1) {
