@@ -6,7 +6,7 @@ class SideBar {
         this.width = width;
 
         this.intersections = [];
-        this.vehicles = [];
+        this.paths = [];
 
         // Create sidebar container
         this.domElement = document.createElement('div');
@@ -52,7 +52,7 @@ class SideBar {
         this.vehiclesContainer.style.flex = "1";
         this.vehiclesContainer.style.overflowY = "auto";
         this.vehiclesContainer.style.padding = "10px";
-        this.vehiclesContainer.innerHTML = "<h3>Vehicles</h3>";
+        this.vehiclesContainer.innerHTML = "<h3>Scheduled Paths</h3>";
         this.domElement.appendChild(this.vehiclesContainer);
     }
 
@@ -60,7 +60,7 @@ class SideBar {
     update() {
         // Clear existing lists
         this.intersectionsContainer.innerHTML = "<h3>Intersections</h3>";
-        this.vehiclesContainer.innerHTML = "<h3>Vehicles</h3>";
+        this.vehiclesContainer.innerHTML = "<h3>Scheduled Paths</h3>";
 
         // Render intersections
         this.intersections.forEach((intersection, index) => {
@@ -72,9 +72,9 @@ class SideBar {
         });
 
         // Render vehicles
-        this.vehicles.forEach((vehicle, index) => {
+        this.paths.forEach(path => {
             const item = document.createElement("div");
-            item.textContent = `Vehicle ${index + 1}: ${vehicle}`;
+            item.textContent = `${path[0]} -> ${path[1]}`;
             item.style.borderBottom = "1px solid gray";
             item.style.padding = "5px";
             this.vehiclesContainer.appendChild(item);
@@ -88,8 +88,8 @@ class SideBar {
     }
 
     // Method to add a vehicle
-    addVehicle(vehicle) {
-        this.vehicles.push(vehicle);
+    addPath(path) {
+        this.paths.push(path);
         this.update();
     }
 

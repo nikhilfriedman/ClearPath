@@ -11,6 +11,9 @@ class MapContainer {
 
         this.startNode = null;
         this.endNode = null;
+
+        this.transactions = [];
+
         this.currentPath = null;
 
         this.container = document.getElementById("map");
@@ -86,10 +89,10 @@ class MapContainer {
         let latlng = event.latlng; // Get lat/lon from click event
         console.log("Clicked at:", latlng);
 
-        if (this.currentPath != null) {
-            this.map.removeLayer(this.currentPath);
-            this.currentPath = null;
-        }
+        // if (this.currentPath != null) {
+        //     this.map.removeLayer(this.currentPath);
+        //     this.currentPath = null;
+        // }
 
         // Find the closest node
         let clickedNode = this.findClosestNode(latlng.lat, latlng.lng);
@@ -102,9 +105,15 @@ class MapContainer {
                 this.endNode = clickedNode;
                 console.log(`End node selected: ${clickedNode}`);
 
-                // Run Dijkstra and draw the path
-                this.calculateAndDrawPath();
-                
+                if (current_path.length != 0) {
+                    this.transactions.push([this.startNode, this.endNode]);
+
+                    sideBar.addPath([this.startNode, this.endNode]);
+                } else {
+                    // Run Dijkstra and draw the path
+                    this.calculateAndDrawPath();
+                }
+
                 // Reset for the next selection
                 this.startNode = null;
                 this.endNode = null;
