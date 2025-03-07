@@ -16,6 +16,8 @@ class MapContainer {
 
         this.currentPath = null;
 
+        this.start_perf = 0;
+
         this.container = document.getElementById("map");
         Object.assign(this.container.style, {
             height: `calc(100vh - 40px)`, // Full height minus the top bar
@@ -111,6 +113,8 @@ class MapContainer {
                     sideBar.addPath([this.startNode, this.endNode]);
                 } else {
                     // Run Dijkstra and draw the path
+                    this.start_perf = performance.now();
+
                     this.calculateAndDrawPath();
                 }
 
@@ -229,6 +233,8 @@ class MapContainer {
         current_path = runDijkstra(flattenedGraph, numNodes, this.startNode, this.endNode);
 
         console.log("Computed path:", current_path);
+
+        console.log("Took ", performance.now() - this.start_perf, "ms");
 
         if (Array.isArray(current_path) && current_path.length > 1) {
             this.drawPath(current_path);
