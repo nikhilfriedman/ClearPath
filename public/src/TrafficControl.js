@@ -4,6 +4,7 @@ let time_state = 0;
 
 let next_to_delete = -1;
 
+// this really needs to be broken up lmao
 setInterval(() => {
     time_int++;
 
@@ -27,17 +28,28 @@ setInterval(() => {
 
             // NEAR ! change light
             if (distance < 0.00065) {
-                element.setLight(0, traffic_yellow);
-                element.setLight(1, traffic_yellow);
-                element.setLight(2, traffic_yellow);
-                element.setLight(3, traffic_yellow);
-
+                if (d_lat < d_lng) {
+                    if (element.state[0] == traffic_green || element.state[0] == traffic_yellow) {
+                        // do nothing. we are already in desired state
+                    } else {
+                        // make yellow
+                        element.setLight(1, traffic_yellow);
+                        element.setLight(3, traffic_yellow);        
+                    }
+                } else {
+                    if (element.state[0] == traffic_green || element.state[0] == traffic_yellow) {
+                        // make yellow
+                        element.setLight(0, traffic_yellow);
+                        element.setLight(2, traffic_yellow);        
+                    } else {
+                        // do nothing. we are already in desired state
+                    }    
+                }
 
                 // finally turn green when close enough
                 if (distance < 0.00045) {
                     if (d_lat < d_lng) {
                         // N S
-    
                         element.setLight(0, traffic_green);
                         element.setLight(1, traffic_red);
                         element.setLight(2, traffic_green);
@@ -45,7 +57,6 @@ setInterval(() => {
             
                     } else {
                         // E W
-    
                         element.setLight(0, traffic_red);
                         element.setLight(1, traffic_green);
                         element.setLight(2, traffic_red);
@@ -54,7 +65,6 @@ setInterval(() => {
                     }
     
                 }
-
 
                 // remove if we got close enough
                 if (distance < 0.00005) {
@@ -97,40 +107,45 @@ setInterval(() => {
             } 
         }
 
-        switch (time_state) {
-            case 0:
-                element.setLight(0, traffic_red);
-                element.setLight(1, traffic_green);
-                element.setLight(2, traffic_red);
-                element.setLight(3, traffic_green);
-                break;
-            case 1:
-                element.setLight(0, traffic_red);
-                element.setLight(1, traffic_yellow);
-                element.setLight(2, traffic_red);
-                element.setLight(3, traffic_yellow);
-                break;
-            case 2:
-                element.setLight(0, traffic_green);
-                element.setLight(1, traffic_red);
-                element.setLight(2, traffic_green);
-                element.setLight(3, traffic_red);
-                break;
-            case 3:
-                element.setLight(0, traffic_yellow);
-                element.setLight(1, traffic_red);
-                element.setLight(2, traffic_yellow);
-                element.setLight(3, traffic_red);
-                break;
-            default:
-                element.setLight(0, "black");
-                element.setLight(1, "black");
-                element.setLight(2, "black");
-                element.setLight(3, "black");
-
-                console.log("invalid time state: ", time_state);
-                break;    
-        }
+        // otherwise...
+        // default traffic light behavior
+        setDefaultTraffic(element);
     });
 }, 10);
 
+function setDefaultTraffic(element) {
+    switch (time_state) {
+        case 0:
+            element.setLight(0, traffic_red);
+            element.setLight(1, traffic_green);
+            element.setLight(2, traffic_red);
+            element.setLight(3, traffic_green);
+            break;
+        case 1:
+            element.setLight(0, traffic_red);
+            element.setLight(1, traffic_yellow);
+            element.setLight(2, traffic_red);
+            element.setLight(3, traffic_yellow);
+            break;
+        case 2:
+            element.setLight(0, traffic_green);
+            element.setLight(1, traffic_red);
+            element.setLight(2, traffic_green);
+            element.setLight(3, traffic_red);
+            break;
+        case 3:
+            element.setLight(0, traffic_yellow);
+            element.setLight(1, traffic_red);
+            element.setLight(2, traffic_yellow);
+            element.setLight(3, traffic_red);
+            break;
+        default:
+            element.setLight(0, "black");
+            element.setLight(1, "black");
+            element.setLight(2, "black");
+            element.setLight(3, "black");
+
+            console.log("invalid time state: ", time_state);
+            break;    
+    }
+}

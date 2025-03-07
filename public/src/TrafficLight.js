@@ -182,4 +182,13 @@ class TrafficLight {
         }
         setTriangleColor(this.triangles[direction], 10, color, tri_direction);
     }
+
+    getLight(direction) {
+        // direction: 0 (N), 1 (E), 2 (S), 3 (W)
+        this.state[direction];
+    }
+
+    getState() {
+        return this.state;
+    }
 }
