@@ -37,7 +37,7 @@ traffic_lights.forEach((element, index) => {
 
 mapContainer.addVehicle(40.41732303838001, -86.89548276315818, "car");
 
-const wsUrl = 'ws://192.168.133.1:81/';
+const wsUrl = 'ws://172.20.10.7/';
 const socket = new WebSocket(wsUrl);
 
 // Called when the connection is established

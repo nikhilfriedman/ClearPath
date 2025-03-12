@@ -96,13 +96,18 @@ class MapContainer {
         //     this.currentPath = null;
         // }
 
+        // compress all
+        mapContainer.intersections.forEach(element => {
+            element.compress();
+        });
+
         // Find the closest node
         let clickedNode = this.findClosestNode(latlng.lat, latlng.lng);
 
         if (clickedNode !== null) {
-            // clickedNode.
-
             // make node bigger to show user?
+
+            mapContainer.intersections[clickedNode].expand();
 
             if (this.startNode === null) {
                 this.startNode = clickedNode;
@@ -110,6 +115,11 @@ class MapContainer {
             } else if (this.endNode === null) {
                 this.endNode = clickedNode;
                 console.log(`End node selected: ${clickedNode}`);
+
+                // compress all
+                mapContainer.intersections.forEach(element => {
+                    element.compress();
+                });
 
                 if (current_path.length != 0) {
                     this.transactions.push([this.startNode, this.endNode]);

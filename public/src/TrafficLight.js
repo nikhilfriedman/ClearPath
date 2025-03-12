@@ -155,6 +155,8 @@ class TrafficLight {
             tri.style.top = `${y + tri_offsets[i].dy}px`;
         });
 
+        this.x = x;
+        this.y = y;    
         this.background.style.left = `${x - 10}px`;
         this.background.style.top = `${y - 10}px`;
 
@@ -183,6 +185,35 @@ class TrafficLight {
         setTriangleColor(this.triangles[direction], 10, color, tri_direction);
     }
 
+    expand() {
+        // Check if position is known
+        if (this.x === undefined || this.y === undefined) return;
+        // Define the expanded size (change as needed)
+        const expandedSize = 60;
+        // Calculate the center of the background based on its current placement.
+        // With the original settings, the center is at (x+10, y+10)
+        const centerX = this.x + 10;
+        const centerY = this.y + 10;
+        // Update the background's size.
+        this.background.style.width = `${expandedSize}px`;
+        this.background.style.height = `${expandedSize}px`;
+        // Adjust left and top so that the background remains centered.
+        this.background.style.left = `${centerX - expandedSize / 2}px`;
+        this.background.style.top = `${centerY - expandedSize / 2}px`;
+    }
+    
+    compress() {
+        if (this.x === undefined || this.y === undefined) return;
+        // Reset to the original size.
+        const originalSize = 40;
+        const centerX = this.x + 10;
+        const centerY = this.y + 10;
+        this.background.style.width = `${originalSize}px`;
+        this.background.style.height = `${originalSize}px`;
+        this.background.style.left = `${centerX - originalSize / 2}px`;
+        this.background.style.top = `${centerY - originalSize / 2}px`;
+    }
+    
     getLight(direction) {
         // direction: 0 (N), 1 (E), 2 (S), 3 (W)
         this.state[direction];
