@@ -43,6 +43,7 @@ setInterval(() => {
                         element.setLight(2, traffic_yellow);        
                     } else {
                         // do nothing. we are already in desired state
+                        // TODO : clean up this logic
                     }    
                 }
 

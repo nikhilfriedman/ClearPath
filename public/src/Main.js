@@ -18,17 +18,6 @@ console.log("Map container instance:", mapContainer);
 console.log("Map instance inside MapContainer:", mapContainer.map);
 
 // DO NOT CHANGE
-// traffic_lights = [
-//     [40.41912655975389, -86.89549348053828],
-//     [40.4182405143039, -86.89549348053828],
-//     [40.4191334282777, -86.8942755322012],
-//     [40.41823364568895, -86.89426199944191],
-//     [40.41913686253933, -86.89308013846299],
-//     [40.418223342765195, -86.89309818214204],
-//     [40.41916090236587, -86.89186670104569],
-//     [40.41824738291817, -86.89183963552709]
-// ];
-
 traffic_lights = [
     [40.41912655975389, -86.89549348053828],
     [40.4182405143039, -86.89549348053828],
@@ -47,3 +36,28 @@ traffic_lights.forEach((element, index) => {
 });
 
 mapContainer.addVehicle(40.41732303838001, -86.89548276315818, "car");
+
+const wsUrl = 'ws://192.168.133.1:81/';
+const socket = new WebSocket(wsUrl);
+
+// Called when the connection is established
+socket.onopen = () => {
+    console.log("WebSocket connection established with ESP32");
+    // Example: send a message to the ESP32
+    socket.send("Hello ESP32");
+};
+
+// Called when a message is received from the ESP32
+socket.onmessage = (event) => {
+    console.log("Message from ESP32:", event.data);
+};
+
+// Called on errors
+socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+};
+
+// Called when the connection is closed
+socket.onclose = (event) => {
+    console.log("WebSocket connection closed");
+};

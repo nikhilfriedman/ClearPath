@@ -100,6 +100,10 @@ class MapContainer {
         let clickedNode = this.findClosestNode(latlng.lat, latlng.lng);
 
         if (clickedNode !== null) {
+            // clickedNode.
+
+            // make node bigger to show user?
+
             if (this.startNode === null) {
                 this.startNode = clickedNode;
                 console.log(`Start node selected: ${clickedNode}`);
