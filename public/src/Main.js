@@ -44,7 +44,10 @@ const socket = new WebSocket(wsUrl);
 socket.onopen = () => {
     console.log("WebSocket connection established with ESP32");
     // Example: send a message to the ESP32
-    socket.send("Hello ESP32");
+    // socket.send({"traffic_light_id": "TL_001","north": "YELLOW","south": "YELLOW","west": "RED","east": "RED", "vehicle_id": "UNKNOWN"});
+
+    socket.send("RRRR");
+    
 };
 
 // Called when a message is received from the ESP32

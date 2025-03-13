@@ -109,13 +109,24 @@ setInterval(() => {
                     mapContainer.drawPath(current_path);
                 }
 
+
+                if (element.id == 1) {
+                    updateLight(element);
+                } 
+                
                 return;
             } 
         }
 
         // otherwise...
         // default traffic light behavior
+        
         setDefaultTraffic(element);
+
+        if (element.id == 1) {
+            updateLight(element);
+        } 
+
     });
 }, 10);
 
@@ -154,4 +165,36 @@ function setDefaultTraffic(element) {
             console.log("invalid time state: ", time_state);
             break;    
     }
+}
+
+function updateLight(element) {
+
+
+    // let n = element.state[0];
+    // let e = element.state[1];
+    // let s = element.state[2];
+    // let w = element.state[3];
+
+    let message = "";
+    for (i in element.state) {
+        switch(element.state[i]) {
+            case traffic_green: 
+                message += "G";
+                break;
+            case traffic_red:
+                message += "R";
+                break;
+            case traffic_yellow:
+                message += "Y";
+                break;
+            default:
+                message += "R";
+                break;
+        }
+
+        // console.log(element.state[i]);
+    }
+
+    socket.send(message);
+    console.log(message);
 }
